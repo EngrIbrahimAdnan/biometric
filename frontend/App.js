@@ -1,32 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import axios from "axios";
-import { useState } from "react";
+import { loginBiometric, signupBiometric } from "./api/biometric";
 
 export default function App() {
-  const [data, setData] = useState(null); // State to store data
-  const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Function to fetch data from the backend
-  const fetchData = async () => {
-    setIsLoading(true); // Start loading
+  // Wrapper to handle login request
+  const handleLogin = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get(
-        "http://192.168.2.146:8080/v1/setup/login"
-      ); // Replace with your endpoint
-      setData(response.data); // Save response data
+      const response = await loginBiometric();
+      setData(response); // Save the response data
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching login:", error.message);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
+    }
+  };
+
+  // Wrapper to handle signup request
+  const handleSignup = async () => {
+    setIsLoading(true);
+    try {
+      const response = await signupBiometric();
+      setData(response); // Save the response data
+    } catch (error) {
+      console.error("Error fetching signup:", error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text>Simple API Fetch Example</Text>
+      <Text>API Fetch Example</Text>
       <View style={{ flexDirection: "row", gap: 10, padding: 20 }}>
-        <Button title="Fetch Data" onPress={fetchData} />
+        <Button title="Login" onPress={handleLogin} />
+        <Button title="Signup" onPress={handleSignup} />
       </View>
       {isLoading && <Text>Loading...</Text>}
       {data && (
