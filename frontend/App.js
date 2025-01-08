@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { loginBiometric, signupBiometric } from "./api/biometric";
 
+import * as LocalAuthentication from "expo-local-authentication";
+
+const authenticate = async () => {
+  const result = await LocalAuthentication.authenticateAsync();
+  if (result.success) {
+    console.log("Fingerprint Authentication successful");
+  } else {
+    console.log("Fingerprint Authentication failed");
+  }
+};
+
 export default function App() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +28,10 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const reset = () => {
+    setData(null);
   };
 
   // Wrapper to handle signup request
@@ -35,17 +50,20 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>API Fetch Example</Text>
-      <View style={{ flexDirection: "row", gap: 10, padding: 20 }}>
-        <Button title="Login" onPress={handleLogin} />
-        <Button title="Signup" onPress={handleSignup} />
+      <View style={{ flexDirection: "row", gap: 10, padding: 10 }}>
+        <Button title="Login with biometrics" onPress={authenticate} />
       </View>
+      <View style={{ flexDirection: "row", gap: 10, padding: 10 }}>
+        <Button title="register" onPress={handleSignup} />
+      </View>
+
       {isLoading && <Text>Loading...</Text>}
       {data && (
-        <View style={{ marginTop: 20 }}>
-          <Text>Received Data:</Text>
+        <View style={{ flexDirection: "row", gap: 10, padding: 10 }}>
           <Text>{data}</Text>
         </View>
       )}
+      <Button title="reset" onPress={reset} />
     </View>
   );
 }
